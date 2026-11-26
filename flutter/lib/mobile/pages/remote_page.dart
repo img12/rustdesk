@@ -135,6 +135,9 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
       gFFI.dialogManager
           .showLoading(translate('Connecting...'), onCancel: closeConnection);
     });
+    if (!mainGetLocalBoolOptionSync(kOptionEnableShowMobileRemoteBottomBar)) {
+      _showBar = false;
+    }
     WakelockManager.enable(_uniqueKey);
     _physicalFocusNode.requestFocus();
     HardwareKeyboard.instance.addHandler(_handleLocalKeyEvent);

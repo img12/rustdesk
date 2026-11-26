@@ -75,6 +75,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
   var _enableStartOnBoot = false;
   var _checkUpdateOnStartup = false;
   var _showTerminalExtraKeys = false;
+  var _showRemoteBottomBar = true;
   var _floatingWindowDisabled = false;
   var _keepScreenOn = KeepScreenOn.duringControlled; // relay on floating window
   var _enableAbr = false;
@@ -155,6 +156,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         mainGetLocalBoolOptionSync(kOptionKeepAwakeDuringOutgoingSessions);
     _showTerminalExtraKeys =
         mainGetLocalBoolOptionSync(kOptionEnableShowTerminalExtraKeys);
+    _showRemoteBottomBar =
+        mainGetLocalBoolOptionSync(kOptionEnableShowMobileRemoteBottomBar);
   }
 
   @override
@@ -675,6 +678,22 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               mainGetLocalBoolOptionSync(kOptionEnableShowTerminalExtraKeys);
           setState(() {
             _showTerminalExtraKeys = newValue;
+          });
+        },
+      ),
+    );
+
+    enhancementsTiles.add(
+      SettingsTile.switchTile(
+        initialValue: _showRemoteBottomBar,
+        title: Text(translate('Show bottom bar on remote control start')),
+        onToggle: (bool v) async {
+          await mainSetLocalBoolOption(
+              kOptionEnableShowMobileRemoteBottomBar, v);
+          final newValue = mainGetLocalBoolOptionSync(
+              kOptionEnableShowMobileRemoteBottomBar);
+          setState(() {
+            _showRemoteBottomBar = newValue;
           });
         },
       ),
