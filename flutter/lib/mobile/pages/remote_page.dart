@@ -380,10 +380,32 @@ class _RemotePageState extends State<RemotePage> with WidgetsBindingObserver {
       // clipboard
       oldValue = '';
     }
-    // This length-only diff assumes the IME appends at the end. If an IME
-    // leaves the caret inside paired punctuation, later insertions can replay
-    // the closing symbol: "()" -> "(a)" sends ")" instead of "a". This is a
-    // client text-diff issue, independent of the host keyboard layout.
+    // Same-length edits (Hangul composition: ㅇ -> 아 -> 안, autocorrect
+    // replacements) were dropped by a length-only diff; diff by common prefix.
+    final oldRunes = oldValue.runes.toList();
+    final newRunes = newValue.runes.toList();
+    var common = 0;
+    while (common < oldRunes.length &&
+        common < newRunes.length &&
+        oldRunes[common] == newRunes[common]) {
+      ++common;
+    }
+    final deleteCount = oldRunes.length - common;
+    final inserted = String.fromCharCodes(newRunes.sublist(common));
+    if (deleteCount > 0 || inserted.runes.any((r) => r >= 0x80)) {
+      for (var k = 0; k < deleteCount; ++k) {
+        inputModel.inputKey('VK_BACK');
+      }
+      if (inserted.isEmpty) {
+        return;
+      }
+      if (inserted.length == 1 && inserted.codeUnitAt(0) < 0x80) {
+        inputChar(inserted);
+      } else {
+        bind.sessionInputString(sessionId: sessionId, value: inserted);
+      }
+      return;
+    }
     if (newValue.length == oldValue.length) {
       // ?
     } else if (newValue.length < oldValue.length) {
