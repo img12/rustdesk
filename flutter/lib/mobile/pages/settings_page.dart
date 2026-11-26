@@ -686,7 +686,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     enhancementsTiles.add(
       SettingsTile.switchTile(
         initialValue: _showRemoteBottomBar,
-        title: Text(translate('Show bottom bar on remote control start')),
+        title: Text('원격 제어 시작 시 하단바 표시'),
         onToggle: (bool v) async {
           await mainSetLocalBoolOption(
               kOptionEnableShowMobileRemoteBottomBar, v);
